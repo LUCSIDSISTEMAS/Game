@@ -1,206 +1,30 @@
-<!DOCTYPE html><html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Jogo Bíblico - 2 Jogadores</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Fredoka', sans-serif;
-      background: linear-gradient(to bottom right, #001f3f, #0074D9);
-      color: white;
-      text-align: center;
-      padding: 20px;
-      min-height: 100vh;
-    }
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 10px;
-    }
-    h3 {
-      font-size: 1.4em;
-      margin-bottom: 30px;
-    }
-    .game-container {
-      background-color: rgba(255, 255, 255, 0.1);
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
-      max-width: 700px;
-      margin: auto;
-      transition: transform 0.5s ease;
-    }
-    .pergunta {
-      font-size: 1.6em;
-      margin-bottom: 20px;
-      animation: fadeIn 0.5s;
-    }
-    .alternativas button {
-      display: block;
-      margin: 10px auto;
-      padding: 12px 24px;
-      background: #FFDC00;
-      border: none;
-      border-radius: 30px;
-      font-size: 1.1em;
-      cursor: pointer;
-      transition: transform 0.2s, background 0.3s;
-      color: #111;
-    }
-    .alternativas button:hover {
-      transform: scale(1.05);
-      background: #FF851B;
-    }
-    .placar {
-      margin-top: 25px;
-      font-size: 1.2em;
-    }
-    .feedback {
-      font-size: 1.4em;
-      font-weight: bold;
-      margin-top: 15px;
-    }
-    .acerto { color: #2ECC40; }
-    .erro { color: #FF4136; }
-    .hidden { display: none; }@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para o meu amor</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>  <h1>Jogo de Perguntas Bíblicas</h1>  <div id="inicio">
-    <p>Jogador 1: <input id="nome1" type="text" placeholder="Nome do Jogador 1"></p>
-    <p>Jogador 2: <input id="nome2" type="text" placeholder="Nome do Jogador 2"></p>
-    <button onclick="iniciarJogo()">Iniciar</button>
-  </div>  <div id="jogo" class="hidden">
-    <h3 id="jogadorAtual"></h3>
-    <div class="game-container">
-      <div class="pergunta" id="pergunta"></div>
-      <div class="alternativas" id="alternativas"></div>
-      <div id="feedback" class="feedback"></div>
-      <div class="placar" id="placar"></div>
+<body>
+
+    <div id="question-container">
+        <div style="font-size:100px;margin-bottom:20px">🧸❤️</div>
+        <h1>Você aceita ser minha namorada?</h1>
+        <p id="mensagem-fuga"></p>
+        <div class="buttons">
+            <button id="btn-yes">SIM</button>
+            <button id="btn-no">NÃO</button>
+        </div>
     </div>
-  </div>  <script>
-    const perguntas = [
-  { pergunta: "Qual foi o primeiro milagre de Jesus?", alternativas: ["Curou um cego", "Transformou água em vinho", "Andou sobre as águas", "Ressuscitou Lázaro"], correta: "Transformou água em vinho" },
-  { pergunta: "Quem construiu a arca?", alternativas: ["Moisés", "Abraão", "Noé", "Davi"], correta: "Noé" },
-  { pergunta: "Quantos livros há na Bíblia?", alternativas: ["66", "70", "72", "64"], correta: "66" },
-  { pergunta: "Quem foi lançado na cova dos leões?", alternativas: ["Elias", "Daniel", "José", "Jeremias"], correta: "Daniel" },
-  { pergunta: "Quem traiu Jesus com um beijo?", alternativas: ["Pedro", "Judas", "Tomé", "João"], correta: "Judas" },
-  { pergunta: "Quem dividiu o Mar Vermelho?", alternativas: ["Josué", "Moisés", "Abraão", "Jesus"], correta: "Moisés" },
-  { pergunta: "Onde Jesus nasceu?", alternativas: ["Jerusalém", "Belém", "Nazaré", "Egito"], correta: "Belém" },
-  { pergunta: "Quem escreveu a maioria das cartas do Novo Testamento?", alternativas: ["Pedro", "Tiago", "Paulo", "João"], correta: "Paulo" },
-  { pergunta: "Quem matou Golias?", alternativas: ["Saul", "Davi", "Elias", "Sansão"], correta: "Davi" },
-  { pergunta: "O que Jesus multiplicou para alimentar 5 mil pessoas?", alternativas: ["Peixes e vinho", "Pães e peixes", "Água e pão", "Vinho e carne"], correta: "Pães e peixes" },
-  { pergunta: "Quem foi o primeiro homem criado por Deus?", alternativas: ["Abraão", "Adão", "Moisés", "Noé"], correta: "Adão" },
-  { pergunta: "Quem foi a mãe de Jesus?", alternativas: ["Marta", "Maria", "Elisabete", "Rute"], correta: "Maria" },
-  { pergunta: "Qual apóstolo andou sobre as águas com Jesus?", alternativas: ["João", "Tiago", "Pedro", "André"], correta: "Pedro" },
-  { pergunta: "Quem negou Jesus três vezes?", alternativas: ["Tomé", "Pedro", "Judas", "João"], correta: "Pedro" },
-  { pergunta: "Quem foi engolido por um grande peixe?", alternativas: ["Paulo", "Jonas", "Pedro", "Daniel"], correta: "Jonas" },
-  { pergunta: "Quem libertou o povo de Israel do Egito?", alternativas: ["José", "Moisés", "Arão", "Josué"], correta: "Moisés" },
-  { pergunta: "Qual o último livro da Bíblia?", alternativas: ["João", "Apocalipse", "Atos", "Romanos"], correta: "Apocalipse" },
-  { pergunta: "Quem foi o homem mais forte da Bíblia?", alternativas: ["Golias", "Saul", "Sansão", "Davi"], correta: "Sansão" },
-  { pergunta: "Quem foi o homem mais sábio da Bíblia?", alternativas: ["Davi", "Salomão", "Moisés", "Isaías"], correta: "Salomão" },
-  { pergunta: "Quem batizou Jesus?", alternativas: ["Pedro", "João Batista", "Tiago", "André"], correta: "João Batista" },
-  { pergunta: "Qual o nome do mar que Jesus acalmou?", alternativas: ["Mar da Galileia", "Mar Vermelho", "Mar Morto", "Mar Mediterrâneo"], correta: "Mar da Galileia" },
-  { pergunta: "Quantos dias e noites choveu no dilúvio?", alternativas: ["20", "30", "40", "50"], correta: "40" },
-  { pergunta: "Qual o nome do irmão de Moisés?", alternativas: ["Josué", "Arão", "Elias", "Levi"], correta: "Arão" },
-  { pergunta: "Qual o primeiro livro do Novo Testamento?", alternativas: ["Lucas", "João", "Mateus", "Marcos"], correta: "Mateus" },
-  { pergunta: "Quem foi o primeiro rei de Israel?", alternativas: ["Salomão", "Davi", "Saul", "Ezequias"], correta: "Saul" },
-  { pergunta: "Qual era a profissão de Pedro?", alternativas: ["Pastor", "Carpinteiro", "Pescador", "Escriba"], correta: "Pescador" },
-  { pergunta: "Quantos discípulos Jesus teve?", alternativas: ["10", "11", "12", "13"], correta: "12" },
-  { pergunta: "Qual o nome da esposa de Abraão?", alternativas: ["Rute", "Sara", "Rebeca", "Raquel"], correta: "Sara" },
-  { pergunta: "Onde Adão e Eva viviam antes do pecado?", alternativas: ["Monte Sinai", "Jardim do Éden", "Jerusalém", "Egito"], correta: "Jardim do Éden" },
-  { pergunta: "Quem foi ressuscitado por Jesus após 4 dias?", alternativas: ["Bartimeu", "Lázaro", "Jairo", "Estevão"], correta: "Lázaro" },
-  { pergunta: "Quem escreveu o livro de Apocalipse?", alternativas: ["Paulo", "Pedro", "João", "Tiago"], correta: "João" },
-  { pergunta: "Qual mulher virou uma estátua de sal?", alternativas: ["Raquel", "Esposa de Ló", "Marta", "Rute"], correta: "Esposa de Ló" },
-  { pergunta: "Quem foi jogado na fornalha de fogo?", alternativas: ["Elias", "Sadraque, Mesaque e Abednego", "Davi", "Paulo"], correta: "Sadraque, Mesaque e Abednego" },
-  { pergunta: "Quem sonhou com uma escada que chegava ao céu?", alternativas: ["Jacó", "José", "Daniel", "Abraão"], correta: "Jacó" },
-  { pergunta: "Quem interpretava sonhos no Egito?", alternativas: ["Faraó", "José", "Moisés", "Eli"], correta: "José" },
-  { pergunta: "Quem escreveu os Salmos?", alternativas: ["Salomão", "Moisés", "Davi", "Isaías"], correta: "Davi" },
-  { pergunta: "Quem batizou o eunuco etíope?", alternativas: ["Pedro", "Paulo", "Filipe", "Estevão"], correta: "Filipe" },
-  { pergunta: "Quem foi escolhido para substituir Judas?", alternativas: ["Matias", "Bartolomeu", "Paulo", "Tomé"], correta: "Matias" },
-  { pergunta: "Quem foi chamado de 'amigo de Deus'?", alternativas: ["Moisés", "Abraão", "Davi", "Isaías"], correta: "Abraão" },
-  { pergunta: "Qual apóstolo é conhecido como 'o incrédulo'?", alternativas: ["Pedro", "João", "Tiago", "Tomé"], correta: "Tomé" },
-  { pergunta: "Qual discípulo era cobrador de impostos?", alternativas: ["Mateus", "Judas", "Simão", "André"], correta: "Mateus" },
-  { pergunta: "Quem era rei quando Jesus nasceu?", alternativas: ["Herodes", "Nabucodonosor", "Pilatos", "César"], correta: "Herodes" },
-  { pergunta: "O que Deus criou no primeiro dia?", alternativas: ["Homem", "Sol", "Luz", "Água"], correta: "Luz" },
-  { pergunta: "Qual animal falou com Eva?", alternativas: ["Leão", "Serpente", "Águia", "Bode"], correta: "Serpente" },
-  { pergunta: "Quem foi arrebatado e não viu a morte?", alternativas: ["Elias", "Enoque", "Ambos", "Pedro"], correta: "Ambos" },
-  { pergunta: "Quem lavou os pés dos discípulos?", alternativas: ["Pedro", "Jesus", "João", "Maria"], correta: "Jesus" },
-  { pergunta: "Qual discípulo era conhecido como 'o amado'?", alternativas: ["Pedro", "Tiago", "João", "Mateus"], correta: "João" },
-  { pergunta: "Qual imperador romano mandou fazer o recenseamento no nascimento de Jesus?", alternativas: ["Nero", "César Augusto", "Herodes", "Tibério"], correta: "César Augusto" },
-  { pergunta: "Quantos dias Jesus jejuou no deserto?", alternativas: ["20", "30", "40", "50"], correta: "40" }
-];
 
-    while (perguntas.length < 50) {
-      perguntas.push(...perguntas.slice(0, 50 - perguntas.length));
-    }
-    perguntas.sort(() => 0.5 - Math.random());
+    <div id="success-container" class="hidden">
+        <div style="font-size:100px;margin-bottom:20px">🧸💖🧸</div>
+        <h1>EBAAAAAAAA! Você me fez a pessoa mais feliz do mundo! ❤️</h1>
+        <p>Prometo te fazer sorrir todos os dias e cuidar de você com todo o meu amor. Mal posso esperar para vivermos nossa história juntos!</p>
+    </div>
 
-    let jogador = 0;
-    let indice = 0;
-    let nomes = ["Juliana", "Júlio César"];
-    let pontos = [0, 0];
-    let vidas = [3, 3];
-
-    function iniciarJogo() {
-      nomes[0] = document.getElementById('nome1').value || "Jogador 1";
-      nomes[1] = document.getElementById('nome2').value || "Jogador 2";
-      document.getElementById('inicio').classList.add('hidden');
-      document.getElementById('jogo').classList.remove('hidden');
-      mostrarPergunta();
-    }
-
-    function mostrarPergunta() {
-      if (vidas[0] === 0 || vidas[1] === 0 || indice >= perguntas.length) {
-        document.getElementById('pergunta').textContent = "Fim do jogo!";
-        document.getElementById('alternativas').innerHTML = "";
-        document.getElementById('feedback').textContent = "";
-        document.getElementById('jogadorAtual').textContent = "";
-        return;
-      }
-
-      const p = perguntas[indice];
-      document.getElementById('pergunta').textContent = p.pergunta;
-      document.getElementById('jogadorAtual').textContent = `Vez de: ${nomes[jogador]}`;
-      const altContainer = document.getElementById('alternativas');
-      altContainer.innerHTML = "";
-      p.alternativas.forEach(alt => {
-        const btn = document.createElement("button");
-        btn.textContent = alt;
-        btn.onclick = () => responder(alt);
-        altContainer.appendChild(btn);
-      });
-      document.getElementById('feedback').textContent = "";
-    }
-
-    function responder(resposta) {
-      const correta = perguntas[indice].correta;
-      const feedback = document.getElementById('feedback');
-
-      if (resposta === correta) {
-        pontos[jogador]++;
-        feedback.innerHTML = '<div class="acerto">✅ Correto!</div>';
-      } else {
-        vidas[jogador]--;
-        feedback.innerHTML = `<div class="erro">❌ Errado! Resposta correta: ${correta}. ${nomes[jogador]} agora tem ${vidas[jogador]} vidas.</div>`;
-      }
-
-      document.getElementById('placar').textContent =
-        `Placar: ${nomes[0]} ${pontos[0]} (${vidas[0]}❤️) x ${pontos[1]} (${vidas[1]}❤️) ${nomes[1]}`;
-
-      if (vidas[jogador] === 0) {
-        feedback.innerHTML += `<br><strong>🏁 ${nomes[1 - jogador]} venceu!</strong>`;
-        document.getElementById('alternativas').innerHTML = "";
-        document.getElementById('jogadorAtual').textContent = "";
-        return;
-      }
-
-      indice++;
-      jogador = 1 - jogador;
-      setTimeout(mostrarPergunta, 2500);
-    }
-  </script></body>
+    <div id="confetti-container" class="hidden"></div>
+    <script src="script.js"></script>
+</body>
 </html>
